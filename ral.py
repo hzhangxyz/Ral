@@ -49,12 +49,14 @@ def eva(src):
         return sum % 2 is 0
     def runer(pre):
         pre = pre.replace('??','?')
-        sp = pre.find(' ')
+        sp1 = pre.find(' ')
+        sp2 = pre.find('\n')
+        sp = sp1 if sp1 < sp2 else sp2
         evaler = pre[:sp]
         script = pre[sp:]
         pro = subprocess.Popen(evaler,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        pro.stdin.write("%s\n\n",script)
-        ans = pro.comminicate()
+        pro.stdin.write("%s\n\n"%script)
+        ans = pro.communicate()[0]
         return ans.replace('?','??')
     data = src
     while data.find('<?') is not -1:
@@ -71,12 +73,13 @@ def app(environ, start_response):
     query = environ["QUERY_STRING"]
     if path[-4:] is '.ral':
         try:
-            file = open(path, 'r')
+            file = open('.%s'%path, 'r')
             src = file.read()
             file.close()
             try:
                 data = eva(src)
-            except Exception:
+            except Exception, e:
+                print e
                 start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
                 return [data500]
         except IOError:
@@ -84,7 +87,7 @@ def app(environ, start_response):
             return [data404]
     elif path[-5:] is '.html':
         try:
-            file = open(path, 'r')
+            file = open('.%s'%path, 'r')
             data = file.read()
             file.close()
         except IOError:
@@ -92,17 +95,20 @@ def app(environ, start_response):
             return [data404]
     elif path[-1] is '/':
         try:
-            file = open('%sindex.ral'%path,'r')
+            file = open('.%sindex.ral'%path,'r')
             src = file.read()
             file.close()
-            try:
-                data = eva(src)
-            except Exception:
-                start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
-                return [data500]
+            #            try:
+            data = eva(src)
+            #            except Exception, e:
+            #                print e
+            #                start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
+            #                return [data500]
         except IOError:
             try:
-                file = open('%sindex.html'%path,'r')
+                print path
+                print '%sindex.html'%path
+                file = open('.%sindex.html'%path,'r')
                 data = file.read()
                 file.close()
             except IOError:
