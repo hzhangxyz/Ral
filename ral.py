@@ -34,12 +34,37 @@ else:
 
 #responce
 
+import subprocess
+
 data404='404 NOT FOUND'
 data500='500 INTERNAL SERVER ERROR'
 
-def eva(src):
-    pass
 
+def eva(src):
+    def evenif(tail):
+        sum=0
+        while data[tail] is '?':
+            tail = tail -1
+            sum = sum + 1
+        return sum % 2 is 0
+    def runer(pre):
+        pre = pre.replace('??','?')
+        sp = pre.find(' ')
+        evaler = pre[:sp]
+        script = pre[sp:]
+        pro = subprocess.Popen(evaler,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        pro.stdin.write("%s\n\n",script)
+        ans = pro.comminicate()
+        return ans.replace('?','??')
+    data = src
+    while data.find('<?') is not -1:
+        head = data.find('<?')
+        tail = data.find('?>',head+1)
+        while evenif(tail):
+            tail = data.find('?>',tail+1)
+        data = '%s%s%s'%(data[:head],runer(data[head+2:tail]),data[tail+2:])
+    return data.replace('??','?')
+    
 def app(environ, start_response):
     method = environ["REQUEST_METHOD"]
     path = environ["PATH_INFO"]
@@ -52,18 +77,18 @@ def app(environ, start_response):
             try:
                 data = eva(src)
             except Exception:
-                start_responce('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
+                start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
                 return [data500]
         except IOError:
-            start_responce('404 NOT FOUND',[('Content-Type','text/html')])
+            start_response('404 NOT FOUND',[('Content-Type','text/html')])
             return [data404]
-    elif path[-5] is '.html':
+    elif path[-5:] is '.html':
         try:
             file = open(path, 'r')
             data = file.read()
             file.close()
         except IOError:
-            start_responce('404 NOT FOUND',[('Content-Type','text/html')])
+            start_response('404 NOT FOUND',[('Content-Type','text/html')])
             return [data404]
     elif path[-1] is '/':
         try:
@@ -73,7 +98,7 @@ def app(environ, start_response):
             try:
                 data = eva(src)
             except Exception:
-                start_responce('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
+                start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
                 return [data500]
         except IOError:
             try:
@@ -81,7 +106,7 @@ def app(environ, start_response):
                 data = file.read()
                 file.close()
             except IOError:
-                start_responce('404 NOT FOUND',[('Content-Type','text/html')])
+                start_response('404 NOT FOUND',[('Content-Type','text/html')])
                 return [data404]
     else:
         pass
