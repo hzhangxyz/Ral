@@ -1,0 +1,8 @@
+<?python print 'hello' ?>
+<?sh echo hello?>
+<?python
+a=1
+b=2
+print a+b
+?>
+<?python print '<hello??>'?>
