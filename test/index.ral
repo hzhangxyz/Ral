@@ -1,0 +1,8 @@
+<html>
+<head>
+<link rel="shortcut icon" href="/bf.jpeg" >
+</head>
+<body>
+<?python print 'hello world'?>
+</body>
+</html>
