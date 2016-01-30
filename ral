@@ -182,5 +182,5 @@ def app(environ, start_response):
 from wsgiref.simple_server import make_server
 
 httpd = make_server(ip, port, app)
-print "starting server in %s:%d" % (ip,port)
+print "Serving HTTP on %s port %d ..." % (ip,port)
 httpd.serve_forever()
