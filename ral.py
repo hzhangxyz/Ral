@@ -51,6 +51,8 @@ def eva(src):
         pre = pre.replace('??','?')
         sp1 = pre.find(' ')
         sp2 = pre.find('\n')
+        if sp1 is -1 and sp2 is -1:
+            raise Exception()
         if sp1 is -1:
             sp = sp2
         elif sp2 is -1:
@@ -59,12 +61,12 @@ def eva(src):
             sp = sp1 if sp1 < sp2 else sp2
         evaler = pre[:sp]
         script = pre[sp+1:]
-        print evaler
-        print script
         pro = subprocess.Popen(evaler,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         pro.stdin.write("%s\n\n"%script)
-        ans = pro.communicate()[0]
-        print ans
+        anser = pro.communicate()[0]
+        ans = anser[0]
+        if anser[1] is not None:
+            raise Exception()
         return ans.replace('?','??')
     data = src
     while data.find('<?') is not -1:
@@ -72,6 +74,8 @@ def eva(src):
         tail = data.find('?>',head+1)
         while evenif(tail):
             tail = data.find('?>',tail+1)
+            if tail is -1:
+                raise Exception()
         data = '%s%s%s'%(data[:head],runer(data[head+2:tail]),data[tail+2:])
     return data.replace('??','?')
     
@@ -84,12 +88,12 @@ def app(environ, start_response):
             file = open('.%s'%path, 'r')
             src = file.read()
             file.close()
-            #try:
-            data = eva(src)
-            #except Exception, e:
-            #    print e
-            #    start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
-            #    return [data500]
+            try:
+                data = eva(src)
+            except Exception, e:
+                print e
+                start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
+                return [data500]
         except IOError:
             start_response('404 NOT FOUND',[('Content-Type','text/html')])
             return [data404]
@@ -106,12 +110,12 @@ def app(environ, start_response):
             file = open('.%sindex.ral'%path,'r')
             src = file.read()
             file.close()
-            #try:
-            data = eva(src)
-            #except Exception, e:
-            #    print e
-            #    start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
-            #    return [data500]
+            try:
+                data = eva(src)
+            except Exception, e:
+                print e
+                start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
+                return [data500]
         except IOError:
             try:
                 print path
