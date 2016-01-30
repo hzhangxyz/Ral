@@ -33,13 +33,13 @@ else:
     set_ip(sys.argv[1])
 
 #responce
-import sys
-import flask
 
-app=flask.Flask(__name__)
+def app(environ, start_response):
+    start_response('200 OK', [('Content-Type', 'text/html')])
+    return ['Hello World']
 
-@app.route("")
-def hello():
-    return "hello world!"
+#server
 
-app.run(ip,port)
+from wsgiref.simple_server import make_server
+httpd = make_server(ip, port, app)
+httpd.serve_forever()
