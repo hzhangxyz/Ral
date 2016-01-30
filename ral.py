@@ -51,12 +51,20 @@ def eva(src):
         pre = pre.replace('??','?')
         sp1 = pre.find(' ')
         sp2 = pre.find('\n')
-        sp = sp1 if sp1 < sp2 else sp2
+        if sp1 is -1:
+            sp = sp2
+        elif sp2 is -1:
+            sp = sp1
+        else:
+            sp = sp1 if sp1 < sp2 else sp2
         evaler = pre[:sp]
-        script = pre[sp:]
+        script = pre[sp+1:]
+        print evaler
+        print script
         pro = subprocess.Popen(evaler,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         pro.stdin.write("%s\n\n"%script)
         ans = pro.communicate()[0]
+        print ans
         return ans.replace('?','??')
     data = src
     while data.find('<?') is not -1:
