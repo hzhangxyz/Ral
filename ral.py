@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+#port and ip
+
 import sys
 import re
 
@@ -29,5 +32,23 @@ else:
     set_port(sys.argv[2])
     set_ip(sys.argv[1])
 
-print ip
-print port
+#response
+def link(sock, addr):
+    print sock
+    print addr
+    sock.close()
+
+#bind
+
+import socket
+import threading
+
+max_con = 1024
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind((ip,port))
+s.listen(max_con)
+while True:
+    sock, addr = s.accept()
+    t = threading.Thread(target=link, args=(sock, addr))
+    t.start()
