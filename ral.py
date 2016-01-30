@@ -34,10 +34,59 @@ else:
 
 #responce
 
+data404='404 NOT FOUND'
+data500='500 INTERNAL SERVER ERROR'
+
+def eva(src):
+    pass
+
 def app(environ, start_response):
-    print environ
+    method = environ["REQUEST_METHOD"]
+    path = environ["PATH_INFO"]
+    query = environ["QUERY_STRING"]
+    if path[-4:] is '.ral':
+        try:
+            file = open(path, 'r')
+            src = file.read()
+            file.close()
+            try:
+                data = eva(src)
+            except Exception:
+                start_responce('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
+                return [data500]
+        except IOError:
+            start_responce('404 NOT FOUND',[('Content-Type','text/html')])
+            return [data404]
+    elif path[-5] is '.html':
+        try:
+            file = open(path, 'r')
+            data = file.read()
+            file.close()
+        except IOError:
+            start_responce('404 NOT FOUND',[('Content-Type','text/html')])
+            return [data404]
+    elif path[-1] is '/':
+        try:
+            file = open('%sindex.ral'%path,'r')
+            src = file.read()
+            file.close()
+            try:
+                data = eva(src)
+            except Exception:
+                start_responce('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
+                return [data500]
+        except IOError:
+            try:
+                file = open('%sindex.html'%path,'r')
+                data = file.read()
+                file.close()
+            except IOError:
+                start_responce('404 NOT FOUND',[('Content-Type','text/html')])
+                return [data404]
+    else:
+        pass
     start_response('200 OK',[('Content-Type','text/html')])
-    return ['Hello World\n']
+    return [data]
 
 #server
 
