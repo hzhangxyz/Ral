@@ -23,7 +23,7 @@ def set_ip(i):
     
 
 if len(sys.argv) is 1:
-    port = 80
+    port = 8000
     ip = "0.0.0.0"
 elif len(sys.argv) is 2:
     set_port(sys.argv[1])
@@ -35,11 +35,14 @@ else:
 #responce
 
 def app(environ, start_response):
-    start_response('200 OK', [('Content-Type', 'text/html')])
-    return ['Hello World']
+    print environ
+    start_response('200 OK',[('Content-Type','text/html')])
+    return ['Hello World\n']
 
 #server
 
 from wsgiref.simple_server import make_server
+
 httpd = make_server(ip, port, app)
+print "starting server in %s:%d" % (ip,port)
 httpd.serve_forever()
