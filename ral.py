@@ -76,12 +76,12 @@ def app(environ, start_response):
             file = open('.%s'%path, 'r')
             src = file.read()
             file.close()
-            try:
-                data = eva(src)
-            except Exception, e:
-                print e
-                start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
-                return [data500]
+            #try:
+            data = eva(src)
+            #except Exception, e:
+            #    print e
+            #    start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
+            #    return [data500]
         except IOError:
             start_response('404 NOT FOUND',[('Content-Type','text/html')])
             return [data404]
@@ -98,12 +98,12 @@ def app(environ, start_response):
             file = open('.%sindex.ral'%path,'r')
             src = file.read()
             file.close()
-            try:
-                data = eva(src)
-            except Exception, e:
-                print e
-                start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
-                return [data500]
+            #try:
+            data = eva(src)
+            #except Exception, e:
+            #    print e
+            #    start_response('500 INTERNAL SERVER ERROR',[('Content-Type','text/html')])
+            #    return [data500]
         except IOError:
             try:
                 print path
