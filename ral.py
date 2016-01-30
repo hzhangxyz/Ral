@@ -52,7 +52,7 @@ def eva(src):
         sp1 = pre.find(' ')
         sp2 = pre.find('\n')
         if sp1 is -1 and sp2 is -1:
-            raise Exception()
+            raise Exception('invalid format')
         if sp1 is -1:
             sp = sp2
         elif sp2 is -1:
@@ -66,7 +66,7 @@ def eva(src):
         anser = pro.communicate()[0]
         ans = anser[0]
         if anser[1] is not None:
-            raise Exception()
+            raise Exception('script error')
         return ans.replace('?','??')
     data = src
     while data.find('<?') is not -1:
@@ -75,7 +75,7 @@ def eva(src):
         while evenif(tail):
             tail = data.find('?>',tail+1)
             if tail is -1:
-                raise Exception()
+                raise Exception('invalid format')
         data = '%s%s%s'%(data[:head],runer(data[head+2:tail]),data[tail+2:])
     return data.replace('??','?')
     
