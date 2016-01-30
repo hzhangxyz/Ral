@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+data404='404 NOT FOUND\n'
+data500='500 INTERNAL SERVER ERROR\n'
+DEBUG=False
+
 #port and ip
 
 import sys
@@ -32,13 +36,9 @@ else:
     set_port(sys.argv[2])
     set_ip(sys.argv[1])
 
-#responce
+#evaluate
 
 import subprocess
-
-data404='404 NOT FOUND\n'
-data500='500 INTERNAL SERVER ERROR\n'
-DEBUG=True
 
 def eva(src):
     def evenif(tail):
@@ -90,6 +90,14 @@ def eva(src):
         data = '%s%s%s'%(data[:head],runer(data[head+2:tail]),data[tail+2:])
     return data.replace('??','?')
     
+#response
+
+import mimetypes
+import posixpath
+
+maps = mimetypes.types_map.copy()
+maps.update({'':'application/octet-stream'})
+
 def app(environ, start_response):
     method = environ["REQUEST_METHOD"]
     path = environ["PATH_INFO"]
@@ -154,9 +162,20 @@ def app(environ, start_response):
                 start_response('404 NOT FOUND',[('Content-Type','text/html')])
                 return [data404]
     else:
-        pass
-    start_response('404 NOT FOUND',[('Content-Type','test/html')])
-    return [data404]
+        try:
+            file = open('.%s'%path,'r')
+            ext = posixpath.splitext(path)[1]
+            if ext in maps:
+                types = maps[ext]
+            else:
+                types = maps['']
+            data = file.read()
+            file.close()
+            start_response('200 OK',[('Content-Type',types)])
+            return data
+        except IOError:
+            start_response('404 NOT FOUND',[('Content-Type','test/html')])
+            return [data404]
 
 #server
 
